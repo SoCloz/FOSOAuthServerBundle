@@ -20,20 +20,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class TokenController
 {
-    /**
-     * @var OAuth2
-     */
-    protected $server;
 
-    public function __construct(OAuth2 $server)
+    public function __construct(Private OAuth2 $server)
     {
-        $this->server = $server;
     }
 
-    /**
-     * @return Response
-     */
-    public function tokenAction(Request $request)
+    public function tokenAction(Request $request): Response
     {
         try {
             return $this->server->grantAccessToken($request);

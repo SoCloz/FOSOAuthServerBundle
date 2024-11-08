@@ -1,8 +1,14 @@
 {
-    "name": "friendsofsymfony/oauth-server-bundle",
-    "description": "Symfony2 OAuth Server Bundle",
+    "name": "socloz/oauth-server-bundle",
+    "description": "Symfony OAuth Server Bundle",
     "license": "MIT",
     "type": "symfony-bundle",
+    "repositories": [
+        {
+            "type": "git",
+            "url": "git@github.com:SoCloz/oauth2-php.git"
+        }
+    ],
     "keywords": [
         "oauth",
         "oauth2",
@@ -20,31 +26,28 @@
     ],
     "homepage": "http://friendsofsymfony.github.com",
     "require": {
-        "php": "^7.2 || ^8.0",
-        "friendsofsymfony/oauth2-php": "~1.1",
-        "symfony/dependency-injection": "^4.4 || ^5.1",
-        "symfony/framework-bundle": "^4.4 || ^5.1",
-        "symfony/security-bundle": "^4.4 || ^5.1",
-        "symfony/twig-bundle": "^4.4 || ^5.1"
+        "php": "^8.1",
+        "socloz/oauth2-php": "~1.4",
+        "symfony/dependency-injection": "~5.3|~6.0",
+        "symfony/framework-bundle": "~5.3|~6.0",
+        "symfony/security-bundle": "~5.3|~6.0",
+        "symfony/twig-bundle": "~5.3|~6.0"
     },
     "require-dev": {
-        "doctrine/doctrine-bundle": "^2.0",
-        "doctrine/mongodb-odm": "^2.2",
+        "doctrine/doctrine-bundle": "~2.0",
+        "doctrine/mongodb-odm": "~2.0",
         "doctrine/orm": "~2.2",
+        "friendsofphp/php-cs-fixer": "^3.0",
         "phing/phing": "~2.4",
-        "php-mock/php-mock-phpunit": "^2.5",
-        "phpstan/phpstan": "^0.12",
-        "phpstan/phpstan-phpunit": "~0.9",
-        "phpunit/phpunit": "^8.5.23 || ^9.0",
-        "symfony/console": "^4.4 || ^5.1",
-        "symfony/form": "^4.4 || ^5.1",
-        "symfony/http-kernel": "^4.4 || ^5.1",
-        "symfony/phpunit-bridge": "^4.4 || ^5.1",
-        "symfony/security-core": "^4.4 || ^5.1",
-        "symfony/yaml": "^4.4 || ^5.1"
-    },
-    "conflict": {
-        "twig/twig": "<1.40 || >=2.0,<2.9"
+        "php-mock/php-mock-phpunit": "~1.0|~2.0",
+        "phpstan/phpstan-phpunit": "^0.12.20",
+        "phpunit/phpunit": "~6.0|~8.0",
+        "symfony/class-loader": "^2.0",
+        "symfony/console": "^5.3",
+        "symfony/form": "^5.3",
+        "symfony/phpunit-bridge": "^5.3",
+        "symfony/templating": "^5.3",
+        "symfony/yaml": "^5.3"
     },
     "suggest": {
         "doctrine/doctrine-bundle": "*",

@@ -18,6 +18,7 @@ use FOS\OAuthServerBundle\Event\PreAuthorizationEvent;
 use FOS\OAuthServerBundle\Form\Handler\AuthorizeFormHandler;
 use FOS\OAuthServerBundle\Model\ClientInterface;
 use FOS\OAuthServerBundle\Model\ClientManagerInterface;
+use RuntimeException;
 use OAuth2\OAuth2;
 use OAuth2\OAuth2ServerException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -31,7 +32,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Twig\Environment as TwigEnvironment;
+use Twig\Environment;
 
 /**
  * Controller handling basic authorization.
@@ -41,61 +42,6 @@ use Twig\Environment as TwigEnvironment;
 class AuthorizeController
 {
     /**
-     * @var ClientInterface
-     */
-    private $client;
-
-    /**
-     * @var SessionInterface
-     */
-    private $session;
-
-    /**
-     * @var Form
-     */
-    private $authorizeForm;
-
-    /**
-     * @var AuthorizeFormHandler
-     */
-    private $authorizeFormHandler;
-
-    /**
-     * @var OAuth2
-     */
-    private $oAuth2Server;
-
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
-
-    /**
-     * @var TokenStorageInterface
-     */
-    private $tokenStorage;
-
-    /**
-     * @var TwigEnvironment
-     */
-    private $twig;
-
-    /**
-     * @var UrlGeneratorInterface
-     */
-    private $router;
-
-    /**
-     * @var ClientManagerInterface
-     */
-    private $clientManager;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
-
-    /**
      * This controller had been made as a service due to support symfony 4 where all* services are private by default.
      * Thus, this is considered a bad practice to fetch services directly from container.
      *
@@ -104,16 +50,16 @@ class AuthorizeController
      * @param SessionInterface $session
      */
     public function __construct(
-        RequestStack $requestStack,
-        Form $authorizeForm,
-        AuthorizeFormHandler $authorizeFormHandler,
-        OAuth2 $oAuth2Server,
-        TokenStorageInterface $tokenStorage,
-        UrlGeneratorInterface $router,
-        ClientManagerInterface $clientManager,
-        EventDispatcherInterface $eventDispatcher,
-        TwigEnvironment $twig,
-        SessionInterface $session = null
+        private RequestStack $requestStack,
+        private Form $authorizeForm,
+        private AuthorizeFormHandler $authorizeFormHandler,
+        private OAuth2 $oAuth2Server,
+        private TokenStorageInterface $tokenStorage,
+        private UrlGeneratorInterface $router,
+        private ClientManagerInterface $clientManager,
+        private EventDispatcherInterface $eventDispatcher,
+        private TwigEnvironment $twig,
+        private ?SessionInterface $session = null
     ) {
         $this->requestStack = $requestStack;
         $this->session = $session;
@@ -130,7 +76,7 @@ class AuthorizeController
     /**
      * Authorize.
      */
-    public function authorizeAction(Request $request)
+    public function authorizeAction(Request $request): Response
     {
         $user = $this->tokenStorage->getToken()->getUser();
 
@@ -165,10 +111,7 @@ class AuthorizeController
         ]);
     }
 
-    /**
-     * @return Response
-     */
-    protected function processSuccess(UserInterface $user, AuthorizeFormHandler $formHandler, Request $request)
+    protected function processSuccess(UserInterface $user, AuthorizeFormHandler $formHandler, Request $request): Response
     {
         if ($this->session && true === $this->session->get('_fos_oauth_server.ensure_logout')) {
             $this->tokenStorage->setToken(null);
@@ -194,17 +137,14 @@ class AuthorizeController
     /**
      * Generate the redirection url when the authorize is completed.
      *
-     * @return string
      */
-    protected function getRedirectionUrl(UserInterface $user)
+    protected function getRedirectionUrl(UserInterface $user): string
     {
         return $this->router->generate('fos_oauth_server_profile_show');
     }
 
-    /**
-     * @return ClientInterface
-     */
-    protected function getClient()
+
+    protected function getClient(): ClientInterface
     {
         if (null !== $this->client) {
             return $this->client;
@@ -238,11 +178,11 @@ class AuthorizeController
     /**
      * @return Request|null
      */
-    private function getCurrentRequest()
+    private function getCurrentRequest(): ?Request
     {
         $request = $this->requestStack->getCurrentRequest();
         if (null === $request) {
-            throw new \RuntimeException('No current request.');
+            throw new RuntimeException('No current request.');
         }
 
         return $request;
