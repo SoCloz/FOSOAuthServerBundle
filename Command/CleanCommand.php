@@ -23,26 +23,18 @@ class CleanCommand extends Command
 {
     protected static $defaultName = 'fos:oauth-server:clean';
 
-    private $accessTokenManager;
-    private $refreshTokenManager;
-    private $authCodeManager;
-
     public function __construct(
-        TokenManagerInterface $accessTokenManager,
-        TokenManagerInterface $refreshTokenManager,
-        AuthCodeManagerInterface $authCodeManager
+        private TokenManagerInterface $accessTokenManager,
+        private TokenManagerInterface $refreshTokenManager,
+        private AuthCodeManagerInterface $authCodeManager
     ) {
         parent::__construct();
-
-        $this->accessTokenManager = $accessTokenManager;
-        $this->refreshTokenManager = $refreshTokenManager;
-        $this->authCodeManager = $authCodeManager;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         parent::configure();
 
@@ -64,9 +56,15 @@ EOT
     {
         foreach ([$this->accessTokenManager, $this->refreshTokenManager, $this->authCodeManager] as $service) {
             $result = $service->deleteExpired();
-            $output->writeln(sprintf('Removed <info>%d</info> items from <comment>%s</comment> storage.', $result, get_class($service)));
+            $output->writeln(
+                sprintf(
+                    'Removed <info>%d</info> items from <comment>%s</comment> storage.',
+                    $result,
+                    get_class($service)
+                )
+            );
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 }
